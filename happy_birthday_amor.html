@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Amor!</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #ff9de2 0%, #ffb347 30%, #ff6b9d 60%, #c44dff 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  canvas#confetti {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .crown {
+    font-size: 60px;
+    animation: bounce 0.8s infinite alternate;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0) rotate(-5deg); }
+    to { transform: translateY(-12px) rotate(5deg); }
+  }
+
+  .title {
+    font-family: 'Pacifico', cursive;
+    font-size: 52px;
+    color: #fff;
+    text-shadow: 3px 3px 0 #ff3fa4, 6px 6px 0 rgba(0,0,0,0.15);
+    line-height: 1.1;
+    margin-bottom: 8px;
+    animation: pop 0.6s ease-out;
+  }
+
+  .subtitle {
+    font-size: 22px;
+    color: #fff8;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .photo-frame {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    margin: 0 auto 24px;
+    border: 6px solid #fff;
+    box-shadow: 0 0 0 6px #ff3fa4, 0 8px 30px rgba(0,0,0,0.2);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    background: #ffe8f5;
+    transition: transform 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .photo-frame:hover { transform: scale(1.05) rotate(3deg); }
+
+  .photo-frame img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+
+  .photo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .photo-placeholder span:first-child {
+    font-size: 48px;
+  }
+
+  .photo-placeholder span:last-child {
+    font-size: 12px;
+    color: #ff3fa4;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  #photoInput { display: none; }
+
+  .card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 24px;
+    padding: 28px 28px;
+    margin: 16px 0;
+    box-shadow: 0 8px 32px rgba(255,60,180,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #ff6b9d, #ffb347, #ff6b9d, #c44dff);
+  }
+
+  .card-emoji {
+    font-size: 36px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .card h2 {
+    font-family: 'Pacifico', cursive;
+    font-size: 24px;
+    color: #ff3fa4;
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  .message-card {
+    background: linear-gradient(135deg, #fff0fa, #fff8ee);
+  }
+
+  .wishes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .wish-item {
+    background: rgba(255,255,255,0.9);
+    border-radius: 16px;
+    padding: 16px 12px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(255,60,180,0.1);
+    transition: transform 0.2s;
+    cursor: default;
+  }
+
+  .wish-item:hover { transform: translateY(-4px) rotate(1deg); }
+
+  .wish-item .emoji { font-size: 32px; display: block; margin-bottom: 6px; }
+  .wish-item .text { font-size: 13px; color: #777; font-weight: 700; }
+
+  .cake-section {
+    margin: 20px 0;
+  }
+
+  .cake {
+    font-size: 80px;
+    display: block;
+    cursor: pointer;
+    animation: wiggle 2s infinite;
+    user-select: none;
+    transition: transform 0.1s;
+  }
+
+  .cake:active { transform: scale(0.9); }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  .cake-hint {
+    font-size: 13px;
+    color: #ff3fa4;
+    font-weight: 700;
+    margin-top: 6px;
+  }
+
+  .tap-count {
+    font-size: 18px;
+    color: #ff6b9d;
+    font-weight: 900;
+    margin-top: 4px;
+  }
+
+  .music-btn {
+    background: linear-gradient(135deg, #ff3fa4, #c44dff);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 14px 32px;
+    font-size: 16px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 4px 20px rgba(196,77,255,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .music-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 28px rgba(196,77,255,0.5);
+  }
+
+  .music-note {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+    font-size: 20px;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .balloon-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0;
+    font-size: 36px;
+  }
+
+  .balloon {
+    display: inline-block;
+    animation: floatUp 3s ease-in-out infinite;
+    cursor: pointer;
+  }
+
+  .balloon:nth-child(2) { animation-delay: 0.4s; }
+  .balloon:nth-child(3) { animation-delay: 0.8s; }
+  .balloon:nth-child(4) { animation-delay: 1.2s; }
+  .balloon:nth-child(5) { animation-delay: 1.6s; }
+
+  @keyframes floatUp {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-14px) rotate(5deg); }
+  }
+
+  .footer {
+    margin-top: 30px;
+    color: rgba(255,255,255,0.8);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .pop-text {
+    position: fixed;
+    pointer-events: none;
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'Pacifico', cursive;
+    animation: popFloat 1.2s ease-out forwards;
+    z-index: 9999;
+  }
+
+  @keyframes popFloat {
+    0% { transform: scale(0) translateY(0); opacity: 1; }
+    60% { transform: scale(1.2) translateY(-30px); opacity: 1; }
+    100% { transform: scale(1) translateY(-70px); opacity: 0; }
+  }
+
+  audio { display: none; }
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+<audio id="birthdayAudio" loop autoplay>
+  <source src="https://files.catbox.moe/ygj1h0.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+
+  <span class="crown">👑</span>
+  <div class="title">Happy Birthday</div>
+  <div class="title" style="color:#ffe066; font-size:60px; text-shadow: 3px 3px 0 #ff3fa4, 6px 6px 0 rgba(0,0,0,0.2);">Amor!</div>
+  <div class="subtitle">🎉 Hari Spesialmu Datang! 🎉</div>
+
+  <div class="balloon-row">
+    <span class="balloon" onclick="popBalloon(this, '🎈')">🎈</span>
+    <span class="balloon" onclick="popBalloon(this, '🎀')">🎀</span>
+    <span class="balloon" onclick="popBalloon(this, '🌸')">🌸</span>
+    <span class="balloon" onclick="popBalloon(this, '✨')">✨</span>
+    <span class="balloon" onclick="popBalloon(this, '💕')">💕</span>
+  </div>
+
+  <!-- Foto Upload -->
+  <div class="card">
+    <span class="card-emoji">📸</span>
+    <h2>Foto Si Bintang Hari Ini</h2>
+    <div class="photo-frame" onclick="document.getElementById('photoInput').click()">
+      <img id="userPhoto" src="foto.jpeg" style="display:block;" alt="Foto Amor">
+      <div class="photo-placeholder" id="photoPlaceholder">
+        
+        
+      </div>
+    </div>
+    <input type="file" id="photoInput" accept="image/*">
+    <p style="font-size:13px; color:#aaa;">🤩</p>
+  </div>
+
+  <!-- Pesan -->
+  <div class="card message-card">
+    <span class="card-emoji">💌</span>
+    <h2>Untuk Amor yang Ter-Amor</h2>
+    <p>
+      Selamat ulang tahun, Amor! 🎂<br><br>
+      Semoga hari-harimu lebih ringan, lebih banyak ketawa, dan skripsinya… ya minimal ada progres lah tiap minggu 😆
+    </p>
+  </div>
+
+  <!-- Kue interaktif -->
+  <div class="card cake-section">
+    <span class="card-emoji">🎂</span>
+    <h2>Tiup Lilinnya, Amor!</h2>
+    <span class="cake" id="cakeEmoji" onclick="tapCake()">🎂</span>
+    <p class="cake-hint">Tap kue sebanyak mungkin untuk mendapat kejutan! 🎁</p>
+    <div class="tap-count" id="tapCount">0 kali di-tap</div>
+  </div>
+
+  <!-- Wishes Grid -->
+  <div class="card">
+    <span class="card-emoji">🌈</span>
+    <h2>Doa & Harapan</h2>
+    <div class="wishes-grid">
+      <div class="wish-item">
+        <span class="emoji">💰</span>
+        <div class="text">Rezeki Melimpah</div>
+      </div>
+      <div class="wish-item">
+        <span class="emoji">💪</span>
+        <div class="text">Sehat Selalu</div>
+      </div>
+      <div class="wish-item">
+        <span class="emoji">❤️</span>
+        <div class="text">Bahagia Terus</div>
+      </div>
+      <div class="wish-item">
+        <span class="emoji">🌟</span>
+        <div class="text">Sukses Dunia Akhirat</div>
+      </div>
+      <div class="wish-item">
+        <span class="emoji">🧋</span>
+        <div class="text">Kenyang Terus</div>
+      </div>
+      <div class="wish-item">
+        <span class="emoji">😂</span>
+        <div class="text">Selalu Ngakak Kocak</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Musik button -->
+  <button class="music-btn" onclick="toggleMusic()">
+    <span class="music-note" id="musicNote">🎵</span>
+    <span id="musicLabel">Play 22 - Taylor Swift</span>
+  </button>
+
+  <div class="footer">
+    Made khusus untuk mi amor<br>
+    <span style="font-size: 20px; display:block; margin-top:8px;">🎊🎉🎈🎊🎉🎈</span>
+  </div>
+
+</div>
+
+<script>
+let tapCount = 0;
+let isPlaying = false;
+const cakeEmojis = ['🎂','🎁','🎉','🥳','✨','💫','🌟','🦋','🍰','🎀'];
+const popTexts = ['Yeay!','Amor!','Hore!','Cihuy!','Asik!','Wohoo!','Yeaah!'];
+
+function tapCake() {
+  tapCount++;
+  document.getElementById('tapCount').textContent = tapCount + ' kali di-tap';
+  const cake = document.getElementById('cakeEmoji');
+  const idx = tapCount % cakeEmojis.length;
+  cake.textContent = cakeEmojis[idx];
+
+  const colors = ['#ff3fa4','#ff6b9d','#c44dff','#ffb347','#ff6b6b','#6bcbff'];
+  const word = popTexts[Math.floor(Math.random() * popTexts.length)];
+  const pop = document.createElement('div');
+  pop.className = 'pop-text';
+  pop.textContent = word;
+  pop.style.color = colors[Math.floor(Math.random() * colors.length)];
+  pop.style.left = (Math.random() * 60 + 20) + '%';
+  pop.style.top = (Math.random() * 40 + 30) + '%';
+  document.body.appendChild(pop);
+  setTimeout(() => pop.remove(), 1200);
+
+  if (tapCount % 5 === 0) launchConfetti(30);
+}
+
+function popBalloon(el, emoji) {
+  el.textContent = '💥';
+  launchConfetti(15);
+  setTimeout(() => { el.textContent = emoji; }, 800);
+}
+
+function toggleMusic() {
+  const audio = document.getElementById('birthdayAudio');
+  const note = document.getElementById('musicNote');
+  const label = document.getElementById('musicLabel');
+  if (isPlaying) {
+    audio.pause();
+    note.style.animation = 'none';
+    label.textContent = 'Putar Musik Pesta!';
+    isPlaying = false;
+  } else {
+    audio.play().catch(() => {});
+    note.style.animation = 'spin 0.5s linear infinite';
+    label.textContent = 'Pause Musiknya';
+    isPlaying = true;
+  }
+}
+
+document.getElementById('photoInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const img = document.getElementById('userPhoto');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+    document.getElementById('photoPlaceholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+});
+
+// Confetti
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+let particles = [];
+function launchConfetti(count) {
+  const colors = ['#ff3fa4','#ffb347','#c44dff','#6bcbff','#ff6b9d','#ffe066','#ff6b6b','#7be495'];
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -10,
+      size: Math.random() * 10 + 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      speed: Math.random() * 3 + 2,
+      wind: Math.random() * 2 - 1,
+      rot: Math.random() * 360,
+      rotSpeed: Math.random() * 5 - 2.5,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle'
+    });
+  }
+}
+
+function animateConfetti() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  particles = particles.filter(p => p.y < canvas.height + 20);
+  for (let p of particles) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot * Math.PI / 180);
+    ctx.fillStyle = p.color;
+    if (p.shape === 'rect') {
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size * 0.5);
+    } else {
+      ctx.beginPath();
+      ctx.arc(0, 0, p.size/2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+    p.y += p.speed;
+    p.x += p.wind;
+    p.rot += p.rotSpeed;
+  }
+  requestAnimationFrame(animateConfetti);
+}
+
+animateConfetti();
+launchConfetti(80);
+setTimeout(() => launchConfetti(50), 1000);
+</script>
+</body>
+</html>
